@@ -1,0 +1,1008 @@
+[
+    {
+        "id": "4ed9602fa02c9a3b",
+        "type": "tab",
+        "label": "Teste de Fluxo",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1f260245ed5e4f7e",
+        "type": "subflow",
+        "name": "Esteira de Setas",
+        "info": "",
+        "category": "dashboard",
+        "in": [],
+        "out": [],
+        "env": [
+            {
+                "name": "VELOCIDADE",
+                "type": "num",
+                "value": "1.2"
+            },
+            {
+                "name": "COR_BRILHO",
+                "type": "str",
+                "value": "#00ff00"
+            },
+            {
+                "name": "COR_FUNDO",
+                "type": "str",
+                "value": "transparent"
+            }
+        ],
+        "meta": {},
+        "color": "#87A980",
+        "icon": "font-awesome/fa-angle-double-right"
+    },
+    {
+        "id": "3ddc6a0f6ebb1bb8",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "c4e06ad86322dff3",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "350ff4bdeebfc73f",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "e2f2b45c315ec5f2",
+        "type": "ui-page",
+        "name": "IHM",
+        "ui": "c4e06ad86322dff3",
+        "path": "/page1",
+        "icon": "",
+        "layout": "grid",
+        "theme": "350ff4bdeebfc73f",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": true,
+        "disabled": false
+    },
+    {
+        "id": "89816c7da6978033",
+        "type": "ui-group",
+        "name": "Botões",
+        "page": "e2f2b45c315ec5f2",
+        "width": 9,
+        "height": 1,
+        "order": 1,
+        "showTitle": false,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "c62366ba049ca8ed",
+        "type": "ui-spacer",
+        "group": "89816c7da6978033",
+        "name": "spacer",
+        "order": 12,
+        "width": 8,
+        "height": 1,
+        "className": ""
+    },
+    {
+        "id": "9277937520a486de",
+        "type": "ui-group",
+        "name": "Group 2",
+        "page": "e2f2b45c315ec5f2",
+        "width": "3",
+        "height": 1,
+        "order": 2,
+        "showTitle": false,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "491806d3beb3ded9",
+        "type": "ui-spacer",
+        "group": "9277937520a486de",
+        "name": "spacer",
+        "tooltip": "",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "className": ""
+    },
+    {
+        "id": "311e8e1875496efd",
+        "type": "function",
+        "z": "1f260245ed5e4f7e",
+        "name": "function 2",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e0e472cef0301e88",
+        "type": "ui-slider",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "ml",
+        "label": "mL",
+        "tooltip": "",
+        "order": 1,
+        "width": 4,
+        "height": "1",
+        "passthru": false,
+        "outs": "all",
+        "topic": "slider",
+        "topicType": "msg",
+        "thumbLabel": "always",
+        "showTicks": "false",
+        "min": 0,
+        "max": "300",
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 310,
+        "y": 240,
+        "wires": [
+            [
+                "3805b8db09a6fa15",
+                "9a8dd5e81671d820"
+            ]
+        ]
+    },
+    {
+        "id": "3b3ee55023e0b552",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "start",
+        "label": "<b style=\"font-size: 1.5em;\">Start</b>",
+        "order": 9,
+        "width": 4,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "start",
+        "topicType": "str",
+        "buttonColor": "#009933",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 130,
+        "y": 560,
+        "wires": [
+            [
+                "43736ce828404227",
+                "4e346fbf7da42a10"
+            ]
+        ]
+    },
+    {
+        "id": "b7643574a28d2df3",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "enviar",
+        "label": "<b style=\"font-size: 1.5em;\">Enviar</b>",
+        "order": 11,
+        "width": 8,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "arrow-expand-right",
+        "iconPosition": "right",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "enviar",
+        "topicType": "str",
+        "buttonColor": "#009933",
+        "textColor": "black",
+        "iconColor": "black",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 430,
+        "y": 900,
+        "wires": [
+            [
+                "88daae336f2af31c",
+                "43736ce828404227"
+            ]
+        ]
+    },
+    {
+        "id": "62dd39fb0b837255",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "stop",
+        "label": "<b style=\"font-size: 1.5em;\">Stop</b>",
+        "order": 10,
+        "width": 4,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "close-box-outline",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "stop",
+        "topicType": "str",
+        "buttonColor": "#ff3300",
+        "textColor": "black",
+        "iconColor": "black",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 750,
+        "y": 680,
+        "wires": [
+            [
+                "0c0d9209c2eb8a75",
+                "43736ce828404227"
+            ]
+        ]
+    },
+    {
+        "id": "f150a02c167ec6ee",
+        "type": "ui-slider",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "garrafas",
+        "label": "Garrafas",
+        "tooltip": "",
+        "order": 6,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "outs": "all",
+        "topic": "slider",
+        "topicType": "msg",
+        "thumbLabel": "always",
+        "showTicks": "always",
+        "min": 0,
+        "max": "50",
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 320,
+        "y": 480,
+        "wires": [
+            [
+                "65ebaed85c0ee287",
+                "50bc3592524046be"
+            ]
+        ]
+    },
+    {
+        "id": "3805b8db09a6fa15",
+        "type": "ui-gauge",
+        "z": "4ed9602fa02c9a3b",
+        "name": "",
+        "group": "89816c7da6978033",
+        "order": 5,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 1,
+        "height": 5,
+        "gtype": "gauge-tank",
+        "gstyle": "needle",
+        "title": "garrafa",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "units",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#c2f8ff",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#ade3f7",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#98ceee",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "90",
+                "color": "#82bae6",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "120",
+                "color": "#6da5dd",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "150",
+                "color": "#5790d5",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "180",
+                "color": "#0077b3",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "210",
+                "color": "#427bcc",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "240",
+                "color": "#2c67c4",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "270",
+                "color": "#1752bb",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "300",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 540,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "48bc3c1d3bc07501",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "plus_ml",
+        "label": "<b style=\"font-size: 1.5em;\">+</b>",
+        "order": 3,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "num",
+        "topic": "adicionar",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 80,
+        "y": 100,
+        "wires": [
+            [
+                "9a8dd5e81671d820"
+            ]
+        ]
+    },
+    {
+        "id": "8aaa7c40ad1f341c",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "minus_ml",
+        "label": "<b style=\"font-size: 1.5em;\">-</b>",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "num",
+        "topic": "subtrair",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 80,
+        "y": 180,
+        "wires": [
+            [
+                "9a8dd5e81671d820"
+            ]
+        ]
+    },
+    {
+        "id": "6f300de75eeb3381",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "plus_garrafas",
+        "label": "<b style=\"font-size: 1.5em;\">+</b>",
+        "order": 8,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "adicionar",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 100,
+        "y": 320,
+        "wires": [
+            [
+                "65ebaed85c0ee287"
+            ]
+        ]
+    },
+    {
+        "id": "08a0b19939c87610",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "minus_garrafas",
+        "label": "<b style=\"font-size: 1.5em;\">-</b>",
+        "order": 7,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "subtrair",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 100,
+        "y": 400,
+        "wires": [
+            [
+                "65ebaed85c0ee287"
+            ]
+        ]
+    },
+    {
+        "id": "9a8dd5e81671d820",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "logicaBotoes",
+        "func": "// 1. Pega o que está salvo na memória\nlet valorAtual = flow.get(\"posicaoSlider\") || 0;\n\n// 2. Identifica quem enviou a mensagem\nif (msg.topic === \"adicionar\") {\n    valorAtual += 1;\n}\nelse if (msg.topic === \"subtrair\") {\n    valorAtual -= 1;\n}\nelse {\n    // Se a mensagem NÃO veio dos botões, ela veio do SLIDER.\n    // Então atualizamos a memória com a posição real que você arrastou.\n    valorAtual = msg.payload;\n}\n\n// 3. Travas de segurança\nif (valorAtual > 300) valorAtual = 300;\nif (valorAtual < 0) valorAtual = 0;\n\n// 4. Salva o valor atualizado para a próxima vez\nflow.set(\"posicaoSlider\", valorAtual);\n\n// 5. Envia o valor de volta para o Slider (para sincronizar)\nmsg.payload = valorAtual;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 140,
+        "wires": [
+            [
+                "3805b8db09a6fa15",
+                "e0e472cef0301e88"
+            ]
+        ]
+    },
+    {
+        "id": "65ebaed85c0ee287",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "logicaBotoes",
+        "func": "// 1. Pega o que está salvo na memória\nlet valorAtual = flow.get(\"numGarrafas\") || 0;\n\n// 2. Identifica quem enviou a mensagem\nif (msg.topic === \"adicionar\") {\n    valorAtual += 1;\n}\nelse if (msg.topic === \"subtrair\") {\n    valorAtual -= 1;\n}\nelse {\n    // Se a mensagem NÃO veio dos botões, ela veio do SLIDER.\n    // Então atualizamos a memória com a posição real que você arrastou.\n    valorAtual = msg.payload;\n}\n\n// 3. Travas de segurança\nif (valorAtual > 300) valorAtual = 300;\nif (valorAtual < 0) valorAtual = 0;\n\n// 4. Salva o valor atualizado para a próxima vez\nflow.set(\"numGarrafas\", valorAtual);\n\n// 5. Envia o valor de volta para o Slider (para sincronizar)\nmsg.payload = valorAtual;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 360,
+        "wires": [
+            [
+                "f150a02c167ec6ee",
+                "50bc3592524046be"
+            ]
+        ]
+    },
+    {
+        "id": "50bc3592524046be",
+        "type": "ui-text",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "order": 4,
+        "width": 2,
+        "height": 2,
+        "name": "",
+        "label": "<b>Garrafas para tampar:</b>",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "style": true,
+        "font": "Georgia,Georgia,serif",
+        "fontSize": "21",
+        "color": "#000000",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 730,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "43736ce828404227",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "function 1",
+        "func": "// 1. Recupera o estado atual dos botões ou define o padrão inicial\nlet status = flow.get(\"botoes_status\") || { start: true, stop: false, config: false, enviar: false };\n\nlet comando = msg.topic;\n\n// 2. Lógica de transição de estados\nif (comando === \"start\") {\n    status.start = false;\n    status.stop = true;\n    status.config = true;\n    status.enviar = false; // Começa desligado até configurar\n} \nelse if (comando === \"stop\") {\n    status.start = true;\n    status.stop = false;\n    status.config = false;\n    status.enviar = true;\n} \nelse if (comando === \"config\") {\n    // Só permite habilitar o enviar se o Stop estiver ativo (ou seja, o sistema deu Start)\n    if (status.stop === true) {\n        status.enviar = true;\n    }\n}\n\n// 3. Salva o novo estado na memória para o próximo clique\nflow.set(\"botoes_status\", status);\n\n// 4. Envia para as 4 saídas\nreturn [\n    { enabled: status.start },  // Saída 1\n    { enabled: status.stop },   // Saída 2\n    { enabled: status.config }, // Saída 3\n    { enabled: status.enviar }  // Saída 4\n];",
+        "outputs": 4,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 680,
+        "wires": [
+            [
+                "9516e111405a3f65",
+                "3b3ee55023e0b552"
+            ],
+            [
+                "62dd39fb0b837255",
+                "b294ee7c05d8d8ed"
+            ],
+            [],
+            [
+                "b7643574a28d2df3",
+                "be3c6598547687b8"
+            ]
+        ]
+    },
+    {
+        "id": "4e346fbf7da42a10",
+        "type": "debug",
+        "z": "4ed9602fa02c9a3b",
+        "name": "saida do start",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "0c0d9209c2eb8a75",
+        "type": "debug",
+        "z": "4ed9602fa02c9a3b",
+        "name": "saida do stop",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 970,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "9516e111405a3f65",
+        "type": "debug",
+        "z": "4ed9602fa02c9a3b",
+        "name": "entrada do start",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "b294ee7c05d8d8ed",
+        "type": "debug",
+        "z": "4ed9602fa02c9a3b",
+        "name": "entrada do stop",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "be3c6598547687b8",
+        "type": "debug",
+        "z": "4ed9602fa02c9a3b",
+        "name": "entrada do enviar",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "88daae336f2af31c",
+        "type": "debug",
+        "z": "4ed9602fa02c9a3b",
+        "name": "saida do enviar",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "446a373e94fc695b",
+        "type": "ui-text",
+        "z": "4ed9602fa02c9a3b",
+        "group": "9277937520a486de",
+        "order": 1,
+        "width": 3,
+        "height": 2,
+        "name": "",
+        "label": "Garrafas tampadas (%)",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "style": true,
+        "font": "Georgia,Georgia,serif",
+        "fontSize": "19",
+        "color": "#000000",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1050,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "8d9d7136052f8416",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "porcentoGarrafas",
+        "func": "// 1. Pega a meta de garrafas que você selecionou (salva na memória 'numGarrafas')\nlet metaSeleccionada = flow.get(\"numGarrafas\") || 1;\n\n// 2. Pega quantas garrafas o sensor já contou (valor real vindo do sensor)\nlet totalEnchidas = msg.payload;\n\n// 3. Cálculo da Porcentagem\n// Usamos Math.max(1, ...) para garantir que nunca divida por zero se a meta for 0\nlet porcentagem = (totalEnchidas / Math.max(1, metaSeleccionada)) * 100;\n\n// 4. Formatação para ficar bonito no Gauge (ex: 50.5%)\nmsg.payload = parseFloat(porcentagem.toFixed(1));\n\n// 5. Opcional: Enviar informações extras para um texto no Dashboard\nmsg.topic = \"Progresso da Produção\";\nmsg.status_texto = totalEnchidas + \" de \" + metaSeleccionada + \" garrafas\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 480,
+        "wires": [
+            [
+                "446a373e94fc695b"
+            ]
+        ]
+    },
+    {
+        "id": "c6f294bec281eda8",
+        "type": "ui-slider",
+        "z": "4ed9602fa02c9a3b",
+        "group": "9277937520a486de",
+        "name": "Aqui vai o sensor indutivo",
+        "label": "Garrafas",
+        "tooltip": "",
+        "order": 3,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "outs": "all",
+        "topic": "slider",
+        "topicType": "msg",
+        "thumbLabel": "always",
+        "showTicks": "always",
+        "min": 0,
+        "max": "50",
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 570,
+        "y": 500,
+        "wires": [
+            [
+                "8d9d7136052f8416"
+            ]
+        ]
+    },
+    {
+        "id": "a187c8559766a854",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6",
+            "@flowfuse/node-red-dashboard": "1.30.2"
+        }
+    }
+]
