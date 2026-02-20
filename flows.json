@@ -1,0 +1,219 @@
+[
+    {
+        "id": "db1e41128a262be4",
+        "type": "tab",
+        "label": "Fluxo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e83675d08c32fefc",
+        "type": "tab",
+        "label": "Fluxo 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "49c9775fb84422bb",
+        "type": "inject",
+        "z": "db1e41128a262be4",
+        "name": "Testar 10 pulsos",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "10",
+        "payloadType": "num",
+        "x": 220,
+        "y": 100,
+        "wires": [
+            [
+                "f15dda9e18208a59"
+            ]
+        ]
+    },
+    {
+        "id": "f15dda9e18208a59",
+        "type": "change",
+        "z": "db1e41128a262be4",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "valorPulsos",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ce5318f1b72af328",
+        "type": "function",
+        "z": "db1e41128a262be4",
+        "name": "function 1",
+        "func": "// Pega o valor salvo na memória do Node-RED\nlet pulsos = flow.get('valorPulsos') || 0;\n\nif (pulsos <= 0) {\n    node.warn(\"ERRO: Defina um valor de pulsos primeiro clicando no outro botão!\");\n    return null; \n}\n\n// Função de tempo ajustada para simulação visual (usando Promise)\nconst delayMs = (ms) => new Promise(resolve => setTimeout(resolve, ms));\n\nnode.status({fill:\"blue\", shape:\"dot\", text:\"Iniciando...\"});\n\n(async function() {\n    // --- 1. TESTE DO RELÉ (Saída 1) ---\n    node.send([{ payload: \"Relé LIGADO (Aguardando 1s)\" }, null]);\n    await delayMs(500);\n    \n    node.send([{ payload: \"Relé DESLIGADO (Aguardando 1s)\" }, null]);\n    await delayMs(500);\n\n    node.status({fill:\"red\", shape:\"dot\", text:\"Enviando Pulsos...\"});\n\n    // --- 2. TESTE DOS PULSOS (Saída 2) ---\n    for(let i = 1; i <= pulsos; i++) {\n        // Simula o envio de 24V para o CLP\n        node.send([null, { payload: `Pulso ${i}: 24V (Borda de Subida)` }]);\n        await delayMs(5); // 500ms em vez de 2ms para você conseguir ler na tela\n        \n        // Simula a queda para 0V\n        node.send([null, { payload: `Pulso ${i}: 0V (Borda de Descida)` }]);\n        await delayMs(5);\n    }\n\n    // --- 3. FINALIZAÇÃO ---\n    await delayMs(100);\n    node.send([{ payload: \"FIM DO PROCESSO\" }, { payload: \"Sinal estabilizado em 0V\" }]);\n    \n    node.status({fill:\"green\", shape:\"dot\", text:\"Concluído\"});\n})();\n\nreturn null;",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 200,
+        "wires": [
+            [
+                "2f7c35e6261bc77c"
+            ],
+            [
+                "44faecfbd897bdda"
+            ]
+        ]
+    },
+    {
+        "id": "365fc95d023c7b82",
+        "type": "inject",
+        "z": "db1e41128a262be4",
+        "name": "Botão",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 200,
+        "wires": [
+            [
+                "ce5318f1b72af328"
+            ]
+        ]
+    },
+    {
+        "id": "2f7c35e6261bc77c",
+        "type": "debug",
+        "z": "db1e41128a262be4",
+        "name": "Monitor do Relé",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "44faecfbd897bdda",
+        "type": "debug",
+        "z": "db1e41128a262be4",
+        "name": "Monitor dos Pulsos",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "575497b58f82c22d",
+        "type": "inject",
+        "z": "e83675d08c32fefc",
+        "name": "Pulsos",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "50",
+        "payloadType": "num",
+        "x": 250,
+        "y": 80,
+        "wires": [
+            [
+                "a6d2dabfefe31ce2"
+            ]
+        ]
+    },
+    {
+        "id": "a6d2dabfefe31ce2",
+        "type": "change",
+        "z": "e83675d08c32fefc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "valorPulsos",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 500,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5c2bb72d5c0ffee5",
+        "type": "function",
+        "z": "e83675d08c32fefc",
+        "name": "function 2",
+        "func": "// 1. Pega o valor que foi salvo pelo nó Change\nlet pulsos = flow.get('valorPulsos') || 0;\n\n// Se o valor for 0 ou se a mensagem veio de soltar o botão (1), ignora.\nif (pulsos <= 0 || msg.payload === 1) {\n    if (pulsos <= 0 && msg.payload === 0) {\n        node.warn(\"ERRO: Defina um valor de pulsos primeiro!\");\n    }\n    return null; \n}\n\n// Funções de tempo\nconst delayMs = (ms) => new Promise(resolve => setTimeout(resolve, ms));\nconst delayUs = (us) => {\n    const start = process.hrtime.bigint();\n    const target = start + BigInt(us * 1000);\n    while (process.hrtime.bigint() < target) {} // Trava milimétrica\n};\n\n// Como temos 2 saídas no nó, usamos arrays para enviar mensagens\n// node.send([ {mensagem Saida 1}, {mensagem Saida 2} ])\n\nnode.status({fill:\"blue\", shape:\"dot\", text:\"Iniciando...\"});\n\n// Envolvemos numa função assíncrona auto-executável\n(async function() {\n    // Relé ON (Saída 1 = 1, Saída 2 = null)\n    node.send([{ payload: 1 }, null]);\n    await delayMs(1000);\n    \n    // Relé OFF\n    node.send([{ payload: 0 }, null]);\n    await delayMs(1000);\n\n    node.status({fill:\"red\", shape:\"dot\", text:\"Pulsando...\"});\n\n    // Envia os pulsos para o Transistor (Saída 2)\n    for(let i = 0; i < pulsos; i++) {\n        node.send([null, { payload: 1 }]); // Borda de subida\n        delayUs(2000);\n        \n        node.send([null, { payload: 0 }]); // Borda de descida\n        delayUs(2000);\n    }\n\n    // Finaliza garantindo tudo OFF\n    await delayMs(100);\n    node.send([{ payload: 0 }, { payload: 0 }]);\n    \n    node.status({fill:\"green\", shape:\"dot\", text:\"Concluído\"});\n})();\n\nreturn null; // O envio é feito dentro da função assíncrona",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 220,
+        "wires": [
+            [],
+            []
+        ]
+    }
+]
