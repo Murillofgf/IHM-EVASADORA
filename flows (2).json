@@ -1,0 +1,143 @@
+[
+    {
+        "id": "db1e41128a262be4",
+        "type": "tab",
+        "label": "Fluxo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "49c9775fb84422bb",
+        "type": "inject",
+        "z": "db1e41128a262be4",
+        "name": "Testar 10 pulsos",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "10",
+        "payloadType": "num",
+        "x": 220,
+        "y": 100,
+        "wires": [
+            [
+                "f15dda9e18208a59"
+            ]
+        ]
+    },
+    {
+        "id": "f15dda9e18208a59",
+        "type": "change",
+        "z": "db1e41128a262be4",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "valorPulsos",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ce5318f1b72af328",
+        "type": "function",
+        "z": "db1e41128a262be4",
+        "name": "function 1",
+        "func": "// Recupera o valor de pulsos salvo no fluxo (definido via Inject ou Dashboard)\nlet valorPulsos = flow.get('valorPulsos') || 0;\n\n// Proteção contra disparos múltiplos ou valor zero\nif (valorPulsos <= 0 || msg.payload === 1) return null;\n\n// Funções de tempo (Síncrona para precisão de microssegundos e Asíncrona para milissegundos)\nconst delayMs = (ms) => new Promise(resolve => setTimeout(resolve, ms));\nconst delayUs = (us) => {\n    const start = process.hrtime.bigint();\n    const target = start + BigInt(us * 1000);\n    while (process.hrtime.bigint() < target) { }\n};\n\n// Indica no Node-RED que está processando\nnode.status({ fill: \"blue\", shape: \"dot\", text: \"Enviando...\" });\n\n(async function () {\n    // --- 1. RESET (Saída 1 - GPIO 4) ---\n    // Envia HIGH, espera 5ms, envia LOW\n    node.send([{ payload: 1 }, null, null]);\n    await delayMs(5);\n    node.send([{ payload: 0 }, null, null]);\n    await delayMs(5);\n\n    // --- 2. PULSOS (Saída 2 - GPIO 2) ---\n    for (let i = 1; i <= valorPulsos; i++) {\n        // Liga Transistor (Pulsos)\n        node.send([null, { payload: 1 }, null]);\n        delayUs(2000); // 2ms ON\n\n        // Desliga Transistor\n        node.send([null, { payload: 0 }, null]);\n        delayUs(2000); // 2ms OFF\n    }\n\n    // --- 3. ENVIO / FINALIZAÇÃO (Saída 3 - GPIO 5) ---\n    // Envia HIGH, espera 5ms, envia LOW\n    node.send([null, null, { payload: 1 }]);\n    await delayMs(5);\n    node.send([null, null, { payload: 0 }]);\n    await delayMs(5);\n\n    node.status({ fill: \"green\", shape: \"dot\", text: \"Concluído: \" + valorPulsos });\n})();\n\nreturn null;\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 200,
+        "wires": [
+            [
+                "2f7c35e6261bc77c"
+            ],
+            [
+                "44faecfbd897bdda"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "365fc95d023c7b82",
+        "type": "inject",
+        "z": "db1e41128a262be4",
+        "name": "Botão",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 200,
+        "wires": [
+            [
+                "ce5318f1b72af328"
+            ]
+        ]
+    },
+    {
+        "id": "2f7c35e6261bc77c",
+        "type": "debug",
+        "z": "db1e41128a262be4",
+        "name": "Monitor do Relé",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "44faecfbd897bdda",
+        "type": "debug",
+        "z": "db1e41128a262be4",
+        "name": "Monitor dos Pulsos",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 240,
+        "wires": []
+    }
+]
