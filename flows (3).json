@@ -1,0 +1,1228 @@
+[
+    {
+        "id": "4ed9602fa02c9a3b",
+        "type": "tab",
+        "label": "Teste de Fluxo",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9a8dd5e81671d820",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "logicaBotoes",
+        "func": "// 1. Pega o que está salvo na memória\nlet valorAtual = flow.get(\"posicaoSlider\") || 0;\n\n// 2. Identifica quem enviou a mensagem\nif (msg.topic === \"adicionar\") {\n    valorAtual += 1;\n}\nelse if (msg.topic === \"subtrair\") {\n    valorAtual -= 1;\n}\nelse {\n    // Se a mensagem veio do SLIDER, atualizamos a memória\n    valorAtual = msg.payload;\n}\n\n// 3. Travas de segurança (0 a 300 no Slider)\nif (valorAtual > 300) valorAtual = 300;\nif (valorAtual < 0) valorAtual = 0;\n\n// 4. Salva o valor atualizado\nflow.set(\"posicaoSlider\", valorAtual);\n\n// 5. Preparando as saídas\n// msg1 vai para o Slider (Sincronismo 0-300)\nlet msg1 = { payload: valorAtual };\n\n// msg2 vai para o seu processo (Valor dividido por 2)\nlet msg2 = { payload: valorAtual / 2 };\n\n// 6. Retorna as duas mensagens em suas respectivas saídas\nreturn [msg1, msg2];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 140,
+        "wires": [
+            [
+                "3805b8db09a6fa15",
+                "e0e472cef0301e88",
+                "886defa3747b4430"
+            ],
+            [
+                "62cd8dc04ee3a4b7"
+            ]
+        ]
+    },
+    {
+        "id": "65ebaed85c0ee287",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "logicaBotoes",
+        "func": "// 1. Pega o que está salvo na memória\nlet valorAtual = flow.get(\"numGarrafas\") || 0;\n\n// 2. Identifica quem enviou a mensagem\nif (msg.topic === \"adicionar\") {\n    valorAtual += 1;\n}\nelse if (msg.topic === \"subtrair\") {\n    valorAtual -= 1;\n}\nelse {\n    // Se a mensagem NÃO veio dos botões, ela veio do SLIDER.\n    // Então atualizamos a memória com a posição real que você arrastou.\n    valorAtual = msg.payload;\n}\n\n// 3. Travas de segurança\nif (valorAtual > 300) valorAtual = 300;\nif (valorAtual < 0) valorAtual = 0;\n\n// 4. Salva o valor atualizado para a próxima vez\nflow.set(\"numGarrafas\", valorAtual);\n\n// 5. Envia o valor de volta para o Slider (para sincronizar)\nmsg.payload = valorAtual;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 360,
+        "wires": [
+            [
+                "f150a02c167ec6ee",
+                "50bc3592524046be"
+            ]
+        ]
+    },
+    {
+        "id": "43736ce828404227",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "StartStopEnviar",
+        "func": "let status = flow.get(\"botoes_status\") || { start: true, stop: false, enviar: true };\n\nlet comando = msg.topic;\n\nif (comando === \"enviar\") {\n\n    // Apenas carrega os dados. Não inicia o movimento.\n\n    status.enviar = true;\n\n    flow.set(\"dados_carregados\", true);\n\n    node.warn(\"Configurações enviadas ao sistema.\");\n\n}\n\nelse if (comando === \"start\") {\n\n    // Verifica se os dados já foram enviados antes de permitir o Start\n\n    if (flow.get(\"dados_carregados\")) {\n\n        status.start = false;\n\n        status.stop = true;\n\n        status.enviar = false;\n\n        flow.set(\"processo_ativo\", true); // Agora o Start ativa o hardware\n\n    } else {\n\n        node.error(\"Erro: Envie as configurações antes de dar Start!\");\n\n    }\n\n}\n\nelse if (comando === \"stop\") {\n\n    status.start = true;\n\n    status.stop = false;\n\n    status.enviar = true;\n\n    flow.set(\"processo_ativo\", false); // Para tudo imediatamente\n\n}\n\n\n\nflow.set(\"botoes_status\", status);\n\n\n\nreturn [\n\n    { enabled: status.start },\n\n    { enabled: status.stop },\n\n    { enabled: status.enviar }\n\n];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 780,
+        "wires": [
+            [
+                "3b3ee55023e0b552"
+            ],
+            [
+                "62dd39fb0b837255"
+            ],
+            [
+                "b7643574a28d2df3"
+            ]
+        ]
+    },
+    {
+        "id": "bb19e4f928ea9530",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "logicaBotoes",
+        "func": "// 1. Pega o valor da memória (flow)\n// O parseFloat garante que o valor seja tratado como número decimal\nlet valorAtual = parseFloat(flow.get(\"resolucaoK\")) || 0;\n\n// 2. Lógica de incremento e decremento\nif (msg.topic === \"adicionar\") {\n    valorAtual += 0.1;\n}\nelse if (msg.topic === \"subtrair\") {\n    valorAtual -= 0.1;\n}\n\n// 3. Correção de precisão matemática\n// O JS pode gerar 0.300000000004; isso trava em 1 casa decimal\nvalorAtual = Math.round(valorAtual * 10) / 10;\n\n// 4. Travas de segurança (Limites de 0 a 100)\nif (valorAtual > 100) valorAtual = 100;\nif (valorAtual < 0) valorAtual = 0;\n\n// 5. Salva o valor atualizado na memória\nflow.set(\"resolucaoK\", valorAtual);\n\n// 6. Prepara a mensagem de saída para o nó Text\nmsg.payload = valorAtual;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1090,
+        "y": 100,
+        "wires": [
+            [
+                "312b7be2dd5c037d"
+            ]
+        ]
+    },
+    {
+        "id": "886defa3747b4430",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "sensorComparacao",
+        "func": "// 1. Recebe o valor dos mLs vindo da Saída 1 do nó anterior\nlet volumeML = msg.payload;\n\n// 2. Busca na memória o valor da resolução (aquele que muda de 0.1 em 0.1)\nlet divisorK = flow.get(\"resolucaoK\") || 1; // Padrão 1 para evitar divisão por zero\n\n// 3. Realiza o cálculo da divisão\nlet resultadoOriginal = volumeML / divisorK;\n\n// 4. Aplica o arredondamento (Math.round)\n// 272.72 -> 273\n// 272.50 -> 273\n// 272.49 -> 272\nlet resultadoArredondado = Math.round(resultadoOriginal);\n\n// 5. Prepara a saída\nmsg.payload = resultadoArredondado;\n\nflow.set(\"resultado_arredondado\", resultadoArredondado);\n\n// Opcional: Adicionar detalhes extras na msg para depuração\nmsg.original = resultadoOriginal;\nmsg.divisorUsado = divisorK;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 240,
+        "wires": [
+            [
+                "93bd1a4b24edfab2"
+            ]
+        ]
+    },
+    {
+        "id": "0b4c8c0dff4298a3",
+        "type": "function",
+        "z": "4ed9602fa02c9a3b",
+        "name": "Envia_Garrafas",
+        "func": "// Configurações de tempo\nconst tempoReset = 100;\nconst tempoAceso = 20;\nconst tempoApagado = 20;\nconst numPulsos = msg.payload;\n\nconst delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));\n\n(async () => {\n    // --- PASSO 0: LIMPEZA INICIAL (Garante que tudo comece em 0) ---\n    // Isso resolve o problema da primeira execução falhar\n    node.send([ { payload: 0 }, { payload: 0 } ]);\n    await delay(500); // Meio segundo para o CLP entender que as entradas estão em repouso\n    \n    // --- PASSO 1: RESET (GPIO 7 - Saída 1) ---\n    node.send([ { payload: 1 }, null ]); \n    await delay(tempoReset);\n    node.send([ { payload: 0 }, null ]);\n    \n    // Aumentamos um pouco a pausa após o reset para estabilidade\n    await delay(500); \n\n    // --- PASSO 2: CONTAGEM (Saída 2) ---\n   \n    for (let i = 1; i <= numPulsos; i++) {\n        node.warn(\"Pulso nº: \" + i);\n        \n        node.send([ null, { payload: 1 } ]);\n        await delay(tempoAceso);\n        \n        node.send([ null, { payload: 0 } ]);\n        await delay(tempoApagado);\n    }\n})();\n\nreturn null;",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1280,
+        "y": 360,
+        "wires": [
+            [
+                "e1d80eebc23585f2"
+            ],
+            [
+                "187d6ce128314ad2"
+            ]
+        ]
+    },
+    {
+        "id": "e1d80eebc23585f2",
+        "type": "rpi-gpio out",
+        "z": "4ed9602fa02c9a3b",
+        "name": "",
+        "pin": "4",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "bcm": true,
+        "x": 1500,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "187d6ce128314ad2",
+        "type": "rpi-gpio out",
+        "z": "4ed9602fa02c9a3b",
+        "name": "",
+        "pin": "17",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "bcm": true,
+        "x": 1520,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "5ef2c303615028e3",
+        "type": "inject",
+        "z": "4ed9602fa02c9a3b",
+        "name": "move garrafa",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.1",
+        "topic": "",
+        "payload": "pulso",
+        "payloadType": "str",
+        "x": 1130,
+        "y": 700,
+        "wires": [
+            [
+                "063186c444e52b76"
+            ]
+        ]
+    },
+    {
+        "id": "0b4a83059b6da9d7",
+        "type": "inject",
+        "z": "4ed9602fa02c9a3b",
+        "name": "enche garrafa",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1",
+        "topic": "",
+        "payload": "encher",
+        "payloadType": "str",
+        "x": 1130,
+        "y": 740,
+        "wires": [
+            [
+                "063186c444e52b76"
+            ]
+        ]
+    },
+    {
+        "id": "a5416c15c6debe91",
+        "type": "inject",
+        "z": "4ed9602fa02c9a3b",
+        "name": "tampa garrafa",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1",
+        "topic": "",
+        "payload": "tapar",
+        "payloadType": "str",
+        "x": 1130,
+        "y": 780,
+        "wires": [
+            [
+                "063186c444e52b76"
+            ]
+        ]
+    },
+    {
+        "id": "1ff24053d85a1ece",
+        "type": "comment",
+        "z": "4ed9602fa02c9a3b",
+        "name": "funcionando 1",
+        "info": "<template>\n    <div class=\"view-port\">\n        <div class=\"esteira-container\" :class=\"{'em-movimento': deslizando}\" :style=\"estiloContainer\">\n            <div v-for=\"(garrafa, index) in listaGarrafas\" :key=\"'garrafa-' + index + '-' + bootstrapKey\" class=\"item-garrafa\">\n                \n                <div class=\"wrapper-svg\" :style=\"{ width: larguraGarrafa + 'px' }\">\n                    \n                    <svg v-if=\"sistemaPronto && garrafa.tampa\" \n                         :key=\"'tampa-' + index + '-' + lastMove\"\n                         :class=\"['tampa-svg', { 'animar-tampa': index === 7 }]\" \n                         viewBox=\"0 0 441 120\" fill=\"#333\">\n                         <rect x=\"100\" y=\"20\" width=\"241\" height=\"80\" rx=\"20\" />\n                    </svg>\n\n                    <svg version=\"1.1\" viewBox=\"0 0 441 1280\">\n                        <g transform=\"translate(0,1280) scale(0.1,-0.1)\" :fill=\"garrafa.cor\" stroke=\"none\">\n                            <path d=\"M 3061.1 12757.1 H 1341.8 l -45.9 -74.7 c -84.7 -138.2 -92.2 -215.1 -23.6 -271.1 l 34.8 -28.5 -67.2 -531.2 c -37.3 -291.9 -73.5 -563 -81 -602.5 -7.4 -39.5 -36.1 -221.7 -63.5 -406 -27.4 -184.3 -71 -475.2 -98.4 -647.5 -26.1 -172.3 -68.5 -451 -93.4 -620.1 C 853.3 9230.5 844.6 9185.5 802.2 9054.9 759.8 8924.3 721.2 8856.2 554.1 8619.1 279.9 8231.7 198.9 8069.3 161.5 7830 c -9.9 -61.4 -16.2 -1096.4 -21.1 -3380.4 -7.4 -3398 -6.2 -3497.9 41.1 -3718.5 49.8 -233.7 180.7 -413.7 355.2 -490.5 307.8 -137.1 791.4 -197.5 1594.1 -197.5 1039.5 0 1667.7 98.7 1917 301.8 89.7 72.4 128.3 138.2 181.9 312.8 l 38.6 126.2 3.7 3336.5 c 2.4 2184.1 -1.2 3387 -8.7 3481.4 -31.1 358.9 -162 695.8 -381.4 985.5 -90.9 119.6 -190.6 287.5 -239.3 400.6 -81 189.8 -113.4 360 -290.4 1553 -54.8 368.7 -108.4 704.6 -118.4 746.3 -17.4 71.3 -113.4 716.6 -143.3 968 l -13.7 113 49.8 41.6 c 84.7 71.3 79.7 150.3 -17.4 272.2 -32.3 49.2 -29.7 46.5 -48.2 74.7 z\" />\n                        </g>\n                    </svg>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\nexport default {\n    data() {\n        return {\n            larguraGarrafa: 65,\n            deslizando: false,\n            sistemaPronto: false, // BLOQUEIO TOTAL inicial\n            bootstrapKey: 0,\n            lastMove: 0,\n            corVazia: '#663300',\n            corCheia: '#2e1a00',\n            listaGarrafas: [] // Começa vazio\n        }\n    },\n    computed: {\n        estiloContainer() {\n            const deslocamento = (100 / 16);\n            return {\n                width: '106.66%',\n                transform: this.deslizando ? 'translateX(0)' : `translateX(-${deslocamento}%)`\n            }\n        }\n    },\n    mounted() {\n        // Sequência de boot para garantir limpeza\n        this.resetTotal();\n        setTimeout(() => {\n            this.sistemaPronto = true; // Só libera tampas após o deploy estabilizar\n        }, 1000);\n    },\n    watch: {\n        msg: function (newMsg) {\n            if (!newMsg || !newMsg.payload) return;\n            const p = newMsg.payload;\n\n            if (p === \"pulso\") this.iniciarMovimento();\n            else if (p === \"encher\") this.executarEnchimento();\n            else if (p === \"tapar\") this.executarTampagem();\n            else if (p === \"reset\") this.resetTotal();\n        }\n    },\n    methods: {\n        resetTotal() {\n            this.sistemaPronto = false;\n            this.listaGarrafas = Array.from({ length: 16 }, () => ({ \n                cor: '#663300', \n                tampa: false \n            }));\n            this.bootstrapKey++;\n            setTimeout(() => { this.sistemaPronto = true; }, 100);\n        },\n        iniciarMovimento() {\n            if (this.deslizando || this.listaGarrafas.length === 0) return;\n            this.deslizando = true;\n            this.lastMove = Date.now();\n            setTimeout(() => {\n                this.deslizando = false;\n                let g = this.listaGarrafas.pop();\n                g.cor = this.corVazia;\n                g.tampa = false;\n                this.listaGarrafas.unshift(g);\n            }, 400);\n        },\n        executarEnchimento() {\n            if (this.listaGarrafas[3]) this.listaGarrafas[3].cor = this.corCheia;\n        },\n        executarTampagem() {\n            // Só coloca tampa se o sistema já passou pelo boot inicial\n            if (this.listaGarrafas[7] && this.sistemaPronto) {\n                this.listaGarrafas[7].tampa = true;\n            }\n        }\n    }\n}\n</script>\n\n<style>\n    .view-port { width: 100%; overflow: hidden; background: transparent; padding-top: 25px; }\n    .esteira-container { display: flex; justify-content: space-around; align-items: flex-end; }\n    .esteira-container.em-movimento { transition: transform 0.4s ease-in-out; }\n    .item-garrafa { flex: 1; display: flex; justify-content: center; padding: 5px 0; }\n    .wrapper-svg { display: flex; flex-direction: column; align-items: center; position: relative; }\n    .tampa-svg { width: 60%; margin-bottom: -2px; z-index: 2; }\n    .animar-tampa { animation: fecharTampa 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }\n    @keyframes fecharTampa {\n        0% { transform: translateY(-20px); opacity: 0; }\n        100% { transform: translateY(0); opacity: 1; }\n    }\n</style>",
+        "x": 1490,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "fb21711cac4149f0",
+        "type": "comment",
+        "z": "4ed9602fa02c9a3b",
+        "name": "funcionando com animação de colocação das garrafas",
+        "info": "<template>\n    <div class=\"view-port\">\n        <div class=\"esteira-container\" :class=\"{'em-movimento': deslizando}\" :style=\"estiloContainer\">\n            <div v-for=\"(garrafa, index) in listaGarrafas\" :key=\"'g-' + index + '-' + bootstrapKey\"\n                class=\"item-garrafa\">\n\n                <div class=\"wrapper-svg\" :style=\"{ \n                        width: larguraGarrafa + 'px', \n                        opacity: garrafa.visivel ? 1 : 0, \n                        transition: 'opacity 0.4s ease-in-out' \n                     }\">\n\n                    <svg v-if=\"sistemaPronto && garrafa.tampa\" :class=\"['tampa-svg', { 'animar-tampa': index === 7 }]\"\n                        viewBox=\"0 0 441 120\" fill=\"#333\">\n                        <rect x=\"100\" y=\"20\" width=\"241\" height=\"80\" rx=\"20\" />\n                    </svg>\n\n                    <svg version=\"1.1\" viewBox=\"0 0 441 1280\">\n                        <g transform=\"translate(0,1280) scale(0.1,-0.1)\" :fill=\"garrafa.cor\" stroke=\"none\">\n                            <path\n                                d=\"M 3061.1 12757.1 H 1341.8 l -45.9 -74.7 c -84.7 -138.2 -92.2 -215.1 -23.6 -271.1 l 34.8 -28.5 -67.2 -531.2 c -37.3 -291.9 -73.5 -563 -81 -602.5 -7.4 -39.5 -36.1 -221.7 -63.5 -406 -27.4 -184.3 -71 -475.2 -98.4 -647.5 -26.1 -172.3 -68.5 -451 -93.4 -620.1 C 853.3 9230.5 844.6 9185.5 802.2 9054.9 759.8 8924.3 721.2 8856.2 554.1 8619.1 279.9 8231.7 198.9 8069.3 161.5 7830 c -9.9 -61.4 -16.2 -1096.4 -21.1 -3380.4 -7.4 -3398 -6.2 -3497.9 41.1 -3718.5 49.8 -233.7 180.7 -413.7 355.2 -490.5 307.8 -137.1 791.4 -197.5 1594.1 -197.5 1039.5 0 1667.7 98.7 1917 301.8 89.7 72.4 128.3 138.2 181.9 312.8 l 38.6 126.2 3.7 3336.5 c 2.4 2184.1 -1.2 3387 -8.7 3481.4 -31.1 358.9 -162 695.8 -381.4 985.5 -90.9 119.6 -190.6 287.5 -239.3 400.6 -81 189.8 -113.4 360 -290.4 1553 -54.8 368.7 -108.4 704.6 -118.4 746.3 -17.4 71.3 -113.4 716.6 -143.3 968 l -13.7 113 49.8 41.6 c 84.7 71.3 79.7 150.3 -17.4 272.2 -32.3 49.2 -29.7 46.5 -48.2 74.7 z\" />\n                        </g>\n                    </svg>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    data() {\n        return {\n            larguraGarrafa: 65,\n            deslizando: false,\n            sistemaPronto: false,\n            bootstrapKey: 0,\n            corVazia: '#663300',\n            corCheia: '#2e1a00',\n            listaGarrafas: []\n        }\n    },\n    computed: {\n        estiloContainer() {\n            const deslocamento = (100 / 16);\n            return {\n                width: '106.66%',\n                transform: this.deslizando ? 'translateX(0)' : `translateX(-${deslocamento}%)`,\n                transition: this.deslizando ? 'transform 0.4s ease-in-out' : 'none'\n            }\n        }\n    },\n    mounted() {\n        this.resetTotal();\n    },\n    watch: {\n        msg: function (newMsg) {\n            if (!newMsg || !newMsg.payload) return;\n            const p = newMsg.payload;\n            switch(p) {\n                case \"pulso\": this.iniciarMovimento(); break;\n                case \"encher\": this.executarEnchimento(); break;\n                case \"tapar\": this.executarTampagem(); break;\n                case \"reset\": this.resetTotal(); break;\n            }\n        }\n    },\n    methods: {\n        resetTotal() {\n            this.sistemaPronto = false;\n            // Todas as garrafas começam como INVISÍVEIS (transparentes)\n            this.listaGarrafas = Array.from({ length: 16 }, () => ({ \n                cor: this.corVazia, \n                tampa: false,\n                visivel: false \n            }));\n            this.bootstrapKey++;\n            setTimeout(() => { this.sistemaPronto = true; }, 500);\n        },\n        iniciarMovimento() {\n            if (this.deslizando) return;\n            this.deslizando = true;\n            \n            setTimeout(() => {\n                this.deslizando = false;\n                \n                // Pega a garrafa que saiu da tela à direita\n                const g = this.listaGarrafas.pop();\n                \n                // Reseta propriedades físicas\n                g.cor = this.corVazia;\n                g.tampa = false;\n                \n                // REALIMENTAÇÃO: Ao reentrar na esquerda, ela se torna visível (colorida)\n                g.visivel = true; \n                \n                // Coloca no início da esteira\n                this.listaGarrafas.unshift(g);\n            }, 400);\n        },\n        executarEnchimento() {\n            if (this.listaGarrafas[3] && this.listaGarrafas[3].visivel) {\n                this.listaGarrafas.splice(3, 1, { ...this.listaGarrafas[3], cor: this.corCheia });\n            }\n        },\n        executarTampagem() {\n            if (this.listaGarrafas[7] && this.listaGarrafas[7].visivel && this.sistemaPronto) {\n                this.listaGarrafas.splice(7, 1, { ...this.listaGarrafas[7], tampa: true });\n            }\n        }\n    }\n}\n</script>\n\n<style>\n    .view-port {\n        width: 100%;\n        overflow: hidden;\n        background: transparent;\n        padding-top: 25px;\n    }\n\n    .esteira-container {\n        display: flex;\n        justify-content: space-around;\n        align-items: flex-end;\n    }\n\n    .item-garrafa {\n        flex: 1;\n        display: flex;\n        justify-content: center;\n        padding: 5px 0;\n    }\n\n    .wrapper-svg {\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        position: relative;\n    }\n\n    .tampa-svg {\n        width: 60%;\n        margin-bottom: -2px;\n        z-index: 2;\n    }\n\n    .animar-tampa {\n        animation: fecharTampa 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;\n    }\n\n    @keyframes fecharTampa {\n        0% {\n            transform: translateY(-15px);\n            opacity: 0;\n        }\n\n        100% {\n            transform: translateY(0);\n            opacity: 1;\n        }\n    }\n</style>",
+        "x": 1640,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "c1f83ad87c05b007",
+        "type": "change",
+        "z": "4ed9602fa02c9a3b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "resultado_arredondado",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 540,
+        "wires": [
+            [
+                "f9617b18299a1814",
+                "0b4c8c0dff4298a3"
+            ]
+        ]
+    },
+    {
+        "id": "f9617b18299a1814",
+        "type": "debug",
+        "z": "4ed9602fa02c9a3b",
+        "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1260,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "3b3ee55023e0b552",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "start",
+        "label": "<b style=\"font-size: 2em;\">Start</b>",
+        "order": 12,
+        "width": 4,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "start",
+        "topicType": "str",
+        "buttonColor": "#009933",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 130,
+        "y": 580,
+        "wires": [
+            [
+                "43736ce828404227"
+            ]
+        ]
+    },
+    {
+        "id": "b7643574a28d2df3",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "enviar",
+        "label": "<b style=\"font-size: 2em;\">Enviar</b>",
+        "order": 10,
+        "width": 4,
+        "height": 2,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "arrow-expand-right",
+        "iconPosition": "right",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "enviar",
+        "topicType": "str",
+        "buttonColor": "#009933",
+        "textColor": "black",
+        "iconColor": "black",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 110,
+        "y": 980,
+        "wires": [
+            [
+                "43736ce828404227",
+                "c1f83ad87c05b007"
+            ]
+        ]
+    },
+    {
+        "id": "62dd39fb0b837255",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "stop",
+        "label": "<b style=\"font-size: 2em;\">Stop</b>",
+        "order": 11,
+        "width": 4,
+        "height": 0,
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "close-box-outline",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "stop",
+        "topicType": "str",
+        "buttonColor": "#ff3300",
+        "textColor": "black",
+        "iconColor": "black",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 490,
+        "y": 600,
+        "wires": [
+            [
+                "43736ce828404227"
+            ]
+        ]
+    },
+    {
+        "id": "48bc3c1d3bc07501",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "plus_ml",
+        "label": "<b style=\"font-size: 2em;\">+</b>",
+        "order": 3,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "num",
+        "topic": "adicionar",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 80,
+        "y": 100,
+        "wires": [
+            [
+                "9a8dd5e81671d820"
+            ]
+        ]
+    },
+    {
+        "id": "8aaa7c40ad1f341c",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "minus_ml",
+        "label": "<b style=\"font-size: 2em;\">-</b>",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "num",
+        "topic": "subtrair",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 80,
+        "y": 180,
+        "wires": [
+            [
+                "9a8dd5e81671d820"
+            ]
+        ]
+    },
+    {
+        "id": "6f300de75eeb3381",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "plus_garrafas",
+        "label": "<b style=\"font-size: 2em;\">+</b>",
+        "order": 9,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "adicionar",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 100,
+        "y": 320,
+        "wires": [
+            [
+                "65ebaed85c0ee287"
+            ]
+        ]
+    },
+    {
+        "id": "08a0b19939c87610",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "minus_garrafas",
+        "label": "<b style=\"font-size: 2em;\">-</b>",
+        "order": 7,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "subtrair",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 100,
+        "y": 400,
+        "wires": [
+            [
+                "65ebaed85c0ee287"
+            ]
+        ]
+    },
+    {
+        "id": "198d490e50e48a63",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "31a1e091463f525e",
+        "name": "k_plus",
+        "label": "<b style=\"font-size: 2em;\">+</b>",
+        "order": 1,
+        "width": "1",
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "adicionar",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 830,
+        "y": 60,
+        "wires": [
+            [
+                "bb19e4f928ea9530"
+            ]
+        ]
+    },
+    {
+        "id": "d46342d8563167c9",
+        "type": "ui-button",
+        "z": "4ed9602fa02c9a3b",
+        "group": "31a1e091463f525e",
+        "name": "k_minus",
+        "label": "<b style=\"font-size: 2em;\">-</b>",
+        "order": 2,
+        "width": 1,
+        "height": "1",
+        "emulateClick": false,
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "iconPosition": "left",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "subtrair",
+        "topicType": "str",
+        "buttonColor": "#d9d9d9",
+        "textColor": "black",
+        "iconColor": "",
+        "enableClick": true,
+        "enablePointerdown": false,
+        "pointerdownPayload": "",
+        "pointerdownPayloadType": "str",
+        "enablePointerup": false,
+        "pointerupPayload": "",
+        "pointerupPayloadType": "str",
+        "x": 820,
+        "y": 120,
+        "wires": [
+            [
+                "bb19e4f928ea9530"
+            ]
+        ]
+    },
+    {
+        "id": "e0e472cef0301e88",
+        "type": "ui-slider",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "ml",
+        "label": "mL",
+        "tooltip": "",
+        "order": 1,
+        "width": 4,
+        "height": "1",
+        "passthru": false,
+        "outs": "all",
+        "topic": "slider",
+        "topicType": "msg",
+        "thumbLabel": "always",
+        "showTicks": "false",
+        "min": 0,
+        "max": "300",
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 310,
+        "y": 240,
+        "wires": [
+            [
+                "3805b8db09a6fa15",
+                "9a8dd5e81671d820"
+            ]
+        ]
+    },
+    {
+        "id": "f150a02c167ec6ee",
+        "type": "ui-slider",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "name": "garrafas",
+        "label": "Garrafas",
+        "tooltip": "",
+        "order": 6,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "outs": "all",
+        "topic": "slider",
+        "topicType": "msg",
+        "thumbLabel": "always",
+        "showTicks": "always",
+        "min": 0,
+        "max": "50",
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 320,
+        "y": 480,
+        "wires": [
+            [
+                "65ebaed85c0ee287",
+                "50bc3592524046be"
+            ]
+        ]
+    },
+    {
+        "id": "50bc3592524046be",
+        "type": "ui-text",
+        "z": "4ed9602fa02c9a3b",
+        "group": "89816c7da6978033",
+        "order": 4,
+        "width": 2,
+        "height": 2,
+        "name": "",
+        "label": "<b>Garrafas para tampar:</b>",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "style": true,
+        "font": "Georgia,Georgia,serif",
+        "fontSize": "21",
+        "color": "#000000",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 590,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "312b7be2dd5c037d",
+        "type": "ui-text",
+        "z": "4ed9602fa02c9a3b",
+        "group": "31a1e091463f525e",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "<b>K (Resolução do sensor):</b>",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": true,
+        "font": "Georgia,Georgia,serif",
+        "fontSize": "18",
+        "color": "#000000",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1430,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "a94fd63ff11d91e4",
+        "type": "ui-text",
+        "z": "4ed9602fa02c9a3b",
+        "group": "6bc40e045d3e0cb5",
+        "order": 1,
+        "width": 2,
+        "height": 1,
+        "name": "",
+        "label": "<b>Tampadas:</b>",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "style": true,
+        "font": "Georgia,Georgia,serif",
+        "fontSize": "21",
+        "color": "#000000",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 690,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "93bd1a4b24edfab2",
+        "type": "ui-text",
+        "z": "4ed9602fa02c9a3b",
+        "d": true,
+        "group": "31a1e091463f525e",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "p/ CLP:",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 1100,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3805b8db09a6fa15",
+        "type": "ui-gauge",
+        "z": "4ed9602fa02c9a3b",
+        "name": "",
+        "group": "89816c7da6978033",
+        "order": 5,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 1,
+        "height": 4,
+        "gtype": "gauge-tank",
+        "gstyle": "needle",
+        "title": "Garrafa",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "units",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#c2f8ff",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#ade3f7",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#98ceee",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "90",
+                "color": "#82bae6",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "120",
+                "color": "#6da5dd",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "150",
+                "color": "#5790d5",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "180",
+                "color": "#0077b3",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "210",
+                "color": "#427bcc",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "240",
+                "color": "#2c67c4",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "270",
+                "color": "#1752bb",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "300",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 620,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "62cd8dc04ee3a4b7",
+        "type": "ui-gauge",
+        "z": "4ed9602fa02c9a3b",
+        "d": true,
+        "name": "",
+        "group": "89816c7da6978033",
+        "order": 8,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 1,
+        "height": 5,
+        "gtype": "gauge-tank",
+        "gstyle": "needle",
+        "title": "garrafa2",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "units",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#c2f8ff",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#ade3f7",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "60",
+                "color": "#98ceee",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "90",
+                "color": "#82bae6",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "120",
+                "color": "#6da5dd",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "150",
+                "color": "#5790d5",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "180",
+                "color": "#0077b3",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "210",
+                "color": "#427bcc",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "240",
+                "color": "#2c67c4",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "270",
+                "color": "#1752bb",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "300",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 620,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "063186c444e52b76",
+        "type": "ui-template",
+        "z": "4ed9602fa02c9a3b",
+        "group": "303672d281f53ddd",
+        "page": "",
+        "ui": "",
+        "name": "garrafa_processo",
+        "order": 1,
+        "width": 12,
+        "height": 4,
+        "head": "",
+        "format": "<template>\n    <div class=\"view-port\">\n\n        <div class=\"esteira-container\" :style=\"estiloContainer\">\n\n            <div v-for=\"(garrafa, index) in listaGarrafas\" :key=\"'g-' + index + '-' + bootstrapKey\"\n                class=\"item-garrafa\">\n\n                <div class=\"wrapper-svg\" :style=\"{ \n                        width: larguraGarrafa + 'px', \n                        opacity: garrafa.visivel ? 1 : 0, \n                        transition: 'opacity 0.3s ease' \n                     }\">\n\n                    <svg v-if=\"sistemaPronto && garrafa.tampa\" :class=\"['tampa-svg', { 'animar-tampa': index === 7 }]\"\n                        viewBox=\"0 0 441 120\" fill=\"#333\">\n                        <rect x=\"100\" y=\"20\" width=\"241\" height=\"80\" rx=\"20\" />\n                    </svg>\n\n                    <svg version=\"1.1\" viewBox=\"0 0 441 1280\">\n                        <g transform=\"translate(0,1280) scale(0.1,-0.1)\" :fill=\"garrafa.cor\" stroke=\"none\">\n                            <path\n                                d=\"M 3061.1 12757.1 H 1341.8 l -45.9 -74.7 c -84.7 -138.2 -92.2 -215.1 -23.6 -271.1 l 34.8 -28.5 -67.2 -531.2 c -37.3 -291.9 -73.5 -563 -81 -602.5 -7.4 -39.5 -36.1 -221.7 -63.5 -406 -27.4 -184.3 -71 -475.2 -98.4 -647.5 -26.1 -172.3 -68.5 -451 -93.4 -620.1 C 853.3 9230.5 844.6 9185.5 802.2 9054.9 759.8 8924.3 721.2 8856.2 554.1 8619.1 279.9 8231.7 198.9 8069.3 161.5 7830 c -9.9 -61.4 -16.2 -1096.4 -21.1 -3380.4 -7.4 -3398 -6.2 -3497.9 41.1 -3718.5 49.8 -233.7 180.7 -413.7 355.2 -490.5 307.8 -137.1 791.4 -197.5 1594.1 -197.5 1039.5 0 1667.7 98.7 1917 301.8 89.7 72.4 128.3 138.2 181.9 312.8 l 38.6 126.2 3.7 3336.5 c 2.4 2184.1 -1.2 3387 -8.7 3481.4 -31.1 358.9 -162 695.8 -381.4 985.5 -90.9 119.6 -190.6 287.5 -239.3 400.6 -81 189.8 -113.4 360 -290.4 1553 -54.8 368.7 -108.4 704.6 -118.4 746.3 -17.4 71.3 -113.4 716.6 -143.3 968 l -13.7 113 49.8 41.6 c 84.7 71.3 79.7 150.3 -17.4 272.2 -32.3 49.2 -29.7 46.5 -48.2 74.7 z\" />\n                        </g>\n                    </svg>\n                </div>\n            </div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    data() {\n        return {\n            larguraGarrafa: 65,  // Largura visual da garrafa em pixels\n            deslizando: false,   // Flag que ativa a animação de movimento CSS\n            sistemaPronto: false,// Evita bugs de animação durante o reset\n            bootstrapKey: 0,     // Chave para forçar o re-render total se necessário\n            corVazia: '#663300', // Marrom (Vazia)\n            corCheia: '#1a8cff', // Azul (Cheia)\n            listaGarrafas: []    // Array de objetos que representam o estado de cada garrafa\n        }\n    },\n    computed: {\n        // Cálculo dinâmico de estilos para a animação de deslize\n        estiloContainer() {\n            const deslocamento = (100 / 16); // Distância exata de uma garrafa (6.25%)\n            return {\n                width: '106.66%', // Compensação de largura para a garrafa que entra/sai\n                display: 'flex',\n                alignItems: 'flex-end',\n                // Se deslizando for true, move 6.25% para a direita. Caso contrário, volta para 0.\n                transform: this.deslizando ? `translateX(${deslocamento}%)` : 'translateX(0)',\n                // 'none' quando não está deslizando permite o reset instantâneo de posição sem o usuário ver\n                transition: this.deslizando ? 'transform 0.4s ease-in-out' : 'none',\n                // Puxa o container para a esquerda para ocultar a primeira posição\n                marginLeft: `-${deslocamento}%`\n            }\n        }\n    },\n    mounted() {\n        this.resetTotal(); // Inicializa o sistema ao carregar o componente\n    },\n    watch: {\n        // Monitora mensagens externas (ex: do Node-RED) para comandar a esteira\n        msg: function (newMsg) {\n            if (!newMsg || !newMsg.payload) return;\n            const p = newMsg.payload;\n            switch (p) {\n                case \"pulso\": this.iniciarMovimento(); break;\n                case \"encher\": this.executarEnchimento(); break;\n                case \"tapar\": this.executarTampagem(); break;\n                case \"reset\": this.resetTotal(); break;\n            }\n        }\n    },\n    methods: {\n        // Limpa a esteira e redefine 16 garrafas invisíveis e vazias\n        resetTotal() {\n            this.sistemaPronto = false;\n            this.deslizando = false;\n            this.listaGarrafas = Array.from({ length: 16 }, () => ({\n                cor: this.corVazia,\n                tampa: false,\n                visivel: false\n            }));\n            this.bootstrapKey++;\n            setTimeout(() => { this.sistemaPronto = true; }, 500);\n        },\n        \n        // Lógica de Movimento: Primeiro movemos visualmente, depois atualizamos os dados\n        iniciarMovimento() {\n            if (this.deslizando) return;\n\n            // 1. Ativa a transição CSS (o container desliza para a direita)\n            this.deslizando = true;\n\n            setTimeout(() => {\n                // 2. Após 400ms (tempo da transição), removemos o efeito visual\n                this.deslizando = false;\n\n                // 3. Atualizamos o array: removemos a última garrafa e inserimos uma nova na frente\n                const g = this.listaGarrafas.pop(); // Tira a garrafa que saiu da tela\n                g.cor = this.corVazia;             // Limpa o líquido\n                g.tampa = false;                   // Tira a tampa\n                g.visivel = true;                  // Garrafa que entra deve estar visível\n                this.listaGarrafas.unshift(g);     // Coloca na posição 0 do array\n                \n                // O reset do transform para 0 e o unshift ocorrem juntos, criando a ilusão de fluxo infinito.\n            }, 400); \n        },\n\n        // Altera a cor da garrafa na posição de enchimento (index 3)\n        executarEnchimento() {\n            if (this.listaGarrafas[3] && this.listaGarrafas[3].visivel) {\n                // Usamos splice para garantir que o Vue detecte a mudança interna no array\n                this.listaGarrafas.splice(3, 1, { ...this.listaGarrafas[3], cor: this.corCheia });\n            }\n        },\n\n        // Ativa a propriedade tampa na posição de fechamento (index 7)\n        executarTampagem() {\n            if (this.listaGarrafas[7] && this.listaGarrafas[7].visivel && this.sistemaPronto) {\n                this.listaGarrafas.splice(7, 1, { ...this.listaGarrafas[7], tampa: true });\n            }\n        }\n    }\n}\n</script>\n\n<style>\n    /* Viewport: Garante que nada transborde da área da esteira */\n    .view-port {\n        width: 100%;\n        overflow: hidden;\n        background: transparent;\n        padding-top: 25px;\n    }\n\n    .esteira-container {\n        display: flex;\n        align-items: flex-end;\n    }\n\n    /* Item-garrafa: Divide o espaço igualmente (1/16 para cada) */\n    .item-garrafa {\n        flex: 1;\n        display: flex;\n        justify-content: center;\n        padding: 5px 0;\n    }\n\n    .wrapper-svg {\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        position: relative;\n    }\n\n    .tampa-svg {\n        width: 60%;\n        margin-bottom: -2px;\n        /* Encaixa a tampa no gargalo */\n        z-index: 2;\n    }\n\n    /* Animação de queda da tampa (Keyframes abaixo) */\n    .animar-tampa {\n        animation: fecharTampa 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;\n    }\n\n    @keyframes fecharTampa {\n        0% {\n            transform: translateY(-15px);\n            opacity: 0;\n        }\n\n        100% {\n            transform: translateY(0);\n            opacity: 1;\n        }\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1470,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "89816c7da6978033",
+        "type": "ui-group",
+        "name": "Comando",
+        "page": "e2f2b45c315ec5f2",
+        "width": 10,
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "31a1e091463f525e",
+        "type": "ui-group",
+        "name": "sensor",
+        "page": "e831e7e5781d0c05",
+        "width": 8,
+        "height": 1,
+        "order": 1,
+        "showTitle": false,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "6bc40e045d3e0cb5",
+        "type": "ui-group",
+        "name": "completo",
+        "page": "e2f2b45c315ec5f2",
+        "width": 2,
+        "height": 1,
+        "order": 2,
+        "showTitle": false,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "303672d281f53ddd",
+        "type": "ui-group",
+        "name": "processo",
+        "page": "e2f2b45c315ec5f2",
+        "width": 12,
+        "height": 1,
+        "order": 3,
+        "showTitle": false,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "e2f2b45c315ec5f2",
+        "type": "ui-page",
+        "name": "IHM",
+        "ui": "c4e06ad86322dff3",
+        "path": "/page1",
+        "icon": "mdi-monitor",
+        "layout": "grid",
+        "theme": "350ff4bdeebfc73f",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "e831e7e5781d0c05",
+        "type": "ui-page",
+        "name": "Configurações do processo",
+        "ui": "c4e06ad86322dff3",
+        "path": "/page2",
+        "icon": "mdi-cog",
+        "layout": "grid",
+        "theme": "350ff4bdeebfc73f",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 2,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "c4e06ad86322dff3",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "none",
+        "navigationStyle": "icon",
+        "titleBarStyle": "hidden",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "350ff4bdeebfc73f",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "76742df414cd8353",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-pi-gpio": "2.0.6",
+            "@flowfuse/node-red-dashboard": "1.30.2"
+        }
+    }
+]
